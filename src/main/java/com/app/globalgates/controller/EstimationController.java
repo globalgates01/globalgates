@@ -1,6 +1,8 @@
 package com.app.globalgates.controller;
 
+import com.app.globalgates.auth.CustomUserDetails;
 import com.app.globalgates.auth.JwtTokenProvider;
+import com.app.globalgates.common.enumeration.MemberRole;
 import com.app.globalgates.dto.MemberDTO;
 import com.app.globalgates.dto.MemberProfileFileDTO;
 import com.app.globalgates.repository.MemberProfileFileDAO;
@@ -8,6 +10,7 @@ import com.app.globalgates.service.MemberService;
 import com.app.globalgates.service.S3Service;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -29,7 +32,10 @@ public class EstimationController {
     private String googleMapsApiKey;
 
     @GetMapping("list")
-    public String goToList() {
+    public String goToList(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        if (userDetails == null || userDetails.getMemberRole() != MemberRole.EXPERT) {
+            return "redirect:/main/main";
+        }
         return "estimation/estimation-list";
     }
 

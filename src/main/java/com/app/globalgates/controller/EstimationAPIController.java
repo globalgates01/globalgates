@@ -1,6 +1,7 @@
 package com.app.globalgates.controller;
 
 import com.app.globalgates.auth.CustomUserDetails;
+import com.app.globalgates.common.enumeration.MemberRole;
 import com.app.globalgates.dto.EstimationDTO;
 import com.app.globalgates.dto.EstimationExpertDTO;
 import com.app.globalgates.dto.EstimationWithPagingDTO;
@@ -9,6 +10,7 @@ import com.app.globalgates.service.EstimationService;
 import com.app.globalgates.service.S3Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,6 +39,7 @@ public class EstimationAPIController {
     @GetMapping("list/{page}")
     public EstimationWithPagingDTO getList(@PathVariable int page,
                                            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        validateExpert(userDetails);
         return estimationService.getList(page, userDetails != null ? userDetails.getId() : null);
     }
 
@@ -49,6 +52,7 @@ public class EstimationAPIController {
     public boolean updateStatus(@PathVariable Long id,
                                 @RequestBody EstimationDTO estimationDTO,
                                 @AuthenticationPrincipal CustomUserDetails userDetails) {
+        validateExpert(userDetails);
         return estimationService.updateStatus(
                 id,
                 userDetails != null ? userDetails.getId() : null,
@@ -116,6 +120,12 @@ public class EstimationAPIController {
         } catch (IOException e) {
             log.warn("estimation presigned URL 생성 실패. 원본 경로를 그대로 반환합니다. filePath={}", filePath, e);
             return filePath;
+        }
+    }
+
+    private void validateExpert(CustomUserDetails userDetails) {
+        if (userDetails == null || userDetails.getMemberRole() != MemberRole.EXPERT) {
+            throw new AccessDeniedException("expert role required");
         }
     }
 }

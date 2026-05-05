@@ -25,8 +25,7 @@ public class AdminNewsService {
         return adminNewsDAO.findAll();
     }
 
-    // 메인 피드(view_post_feed)는 tbl_post에서 비롯되므로,
-    // 속보 뉴스 카드를 노출하려면 시드 게시글을 함께 만들어 tbl_news.post_id로 연결해야 한다.
+    // Emergency news also creates a seed post so feed queries can hide/show it consistently.
     @Transactional
     @CacheEvict(value = "post:list", allEntries = true)
     public void createAdminNews(NewsDTO newsDTO) {
@@ -40,6 +39,12 @@ public class AdminNewsService {
         postDAO.save(seed);
 
         newsDTO.setPostId(seed.getId());
+        adminNewsDAO.save(newsDTO);
+    }
+
+    @Transactional
+    public void createAdminGeneralNews(NewsDTO newsDTO) {
+        newsDTO.setNewsType(NewsType.GENERAL);
         adminNewsDAO.save(newsDTO);
     }
 
