@@ -23,7 +23,10 @@
             )
         </if>
         <if test="subscriptionTier != null and subscriptionTier != '' and subscriptionTier != 'all'">
-            and coalesce(cast(sub.tier as varchar), 'free') = #{subscriptionTier}
+            and case
+                    when m.member_role = 'expert' then 'expert'
+                    else coalesce(cast(sub.tier as varchar), 'free')
+                end = #{subscriptionTier}
         </if>
         <if test="memberStatus != null and memberStatus != '' and memberStatus != 'all'">
             and m.member_status = #{memberStatus}::member_status
@@ -37,7 +40,10 @@
                bm.company_name,
                m.birth_date,
                m.member_role,
-               coalesce(sub.tier, 'free'::subscription_tier) as subscription_tier,
+               case
+                   when m.member_role = 'expert' then 'expert'::subscription_tier
+                   else coalesce(sub.tier, 'free'::subscription_tier)
+               end as subscription_tier,
                sub.status as subscription_status,
                m.member_status,
                to_char(m.created_datetime, 'YYYY-MM-DD HH24:MI:SS') as created_datetime
@@ -61,7 +67,10 @@
             )
         </if>
         <if test="subscriptionTier != null and subscriptionTier != '' and subscriptionTier != 'all'">
-            and coalesce(cast(sub.tier as varchar), 'free') = #{subscriptionTier}
+            and case
+                    when m.member_role = 'expert' then 'expert'
+                    else coalesce(cast(sub.tier as varchar), 'free')
+                end = #{subscriptionTier}
         </if>
         <if test="memberStatus != null and memberStatus != '' and memberStatus != 'all'">
             and m.member_status = #{memberStatus}::member_status

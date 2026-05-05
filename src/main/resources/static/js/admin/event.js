@@ -118,6 +118,11 @@
         "기타": "etc"
     };
 
+    const newsTypeBadgeMap = {
+        emergency: { className: "badge-reject", text: "긴급" },
+        general: { className: "badge-qna", text: "일반" }
+    };
+
     const subscriptionTierBadgeMap = {
         free: { className: "badge-free", text: "free" },
         pro: { className: "badge-pro", text: "pro" },
@@ -448,22 +453,27 @@
             return;
         }
 
-        newsTbody.innerHTML = newsList.map((news, index) => `
+        newsTbody.innerHTML = newsList.map((news, index) => {
+            const sourceUrl = news.newsSourceUrl || news.news_source_url || news.sourceUrl || "";
+            const newsType = news.newsType || news.news_type || "";
+            const typeBadge = newsTypeBadgeMap[newsType] || { className: "badge-pending", text: newsType || "-" };
+
+            return `
             <div class="div-tr" data-news-id="${news.id}"
                  data-news-content="${escapeHtml(news.newsContent || "")}"
-                 data-news-source-url="${escapeHtml(news.newsSourceUrl || "")}"
+                 data-news-source-url="${escapeHtml(sourceUrl)}"
                  data-news-created-datetime="${escapeHtml(news.createdDatetime || "-")}">
                 <div class="div-td"><input type="checkbox"/></div>
                 <div class="div-td">${index + 1}</div>
-                <div class="div-td">${escapeHtml(news.newsSourceUrl || "-")}</div>
+                <div class="div-td">${sourceUrl ? `<a href="${escapeHtml(sourceUrl)}" target="_blank" rel="noopener noreferrer" data-stop-profile-link>${escapeHtml(sourceUrl)}</a>` : "-"}</div>
                 <div class="div-td">
                     <div class="news-title">${escapeHtml(news.newsTitle)}</div>
                 </div>
                 <div class="div-td">${escapeHtml(newsCategoryLabelMap[news.newsCategory] || news.newsCategory || "-")}</div>
-                <div class="div-td">-</div>
+                <div class="div-td"><span class="badge ${typeBadge.className}">${escapeHtml(typeBadge.text)}</span></div>
                 <div class="div-td">${escapeHtml(news.createdDatetime || "-")}</div>
             </div>
-        `).join("");
+        `}).join("");
     };
 
     const renderReports = (tbody, reports, targetType) => {
@@ -695,7 +705,7 @@
     });
 
 
-    newsWriteBtn.addEventListener("click", (e) => {
+    newsWriteBtn?.addEventListener("click", (e) => {
         openNewsWritePage("emergency");
     });
 
@@ -1130,7 +1140,7 @@
     newsSubmitBtn.addEventListener("click", async (e) => {
         const title = document.querySelector("#newsTitle").value.trim();
         const content = document.querySelector("#newsContent").value.trim();
-        const sourceUrl = document.querySelector("#newsSource").value.trim();
+        const sourceUrl = document.querySelector("#newsSource").value.trim() || document.querySelector("#newsUrl").value.trim();
         const category = document.querySelector("#newsCategory").value;
         if (!title || !content) {
             alert("제목과 내용을 입력해주세요.");
