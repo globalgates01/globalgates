@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="/css/main/main.css">
     <link rel="stylesheet" href="/css/mention/mention.css">
     <link rel="stylesheet" href="/css/main/product-in-mainpage.css">
+    <link rel="stylesheet" href="/css/video_ai/video_ai.css"/>
     <script src="/js/common/mobile-nav.js" th:src="@{/js/common/mobile-nav.js}" defer></script>
     <script src="/js/common/profile-link.js" defer></script>
     <script src="/js/common/header.js" defer></script>
@@ -31,6 +32,7 @@
     <script src="/js/main/event.js"></script>
     <script src="/js/main/service.js"></script>
     <script src="/js/main/layout.js"></script>
+    <script src="/js/video_ai/event.js" defer></script>
 </head>
 <body>
 <div class="Page-Layout">
@@ -83,7 +85,7 @@
                     <span>채팅</span>
                 </a>
                 <th:block th:if="${member.memberRole != null and member.memberRole.name() == 'EXPERT'}">
-                <a class="nav-item" href="/inquiry-chat">
+                <a class="nav-item" href="/inquiry/chart">
                     <svg class="nav-icon" viewBox="0 0 33 32" aria-hidden="true"><g><path d="M12.745 20.54l10.97-8.19c.539-.4 1.307-.244 1.564.38 1.349 3.288.746 7.241-1.938 9.955-2.683 2.714-6.417 3.31-9.83 1.954l-3.728 1.745c5.347 3.697 11.84 2.782 15.898-1.324 3.219-3.255 4.216-7.692 3.284-11.693l.008.009c-1.351-5.878.332-8.227 3.782-13.031L33 0l-4.54 4.59v-.014L12.743 20.544m-2.263 1.987c-3.837-3.707-3.175-9.446.1-12.755 2.42-2.449 6.388-3.448 9.852-1.979l3.72-1.737c-.67-.49-1.53-1.017-2.515-1.387-4.455-1.854-9.789-.931-13.41 2.728-3.483 3.523-4.579 8.94-2.697 13.561 1.405 3.454-.899 5.898-3.22 8.364C1.49 30.2.666 31.074 0 32l10.478-9.466"></path></g></svg>
                     <span>전문가</span>
                 </a>
@@ -205,6 +207,7 @@
 <div th:replace="~{common/compose-modal :: composeModal}"></div>
 <!-- 답글 모달: 전역 fragment 사용 (post-modal.js가 [data-reply-modal] 셀렉터로 잡아 셋업). -->
 <div th:replace="~{common/reply-modal :: replyModal}"></div>
+<div th:replace="~{video_ai/video_ai :: videoAi}"></div>
 <nav class="mobileBar" id="mobileBar">
     <a class="mobileItem">홈</a>
     <a class="mobileItem">탐색</a>

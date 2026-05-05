@@ -2777,8 +2777,13 @@ window.addEventListener("load", () => {
         `;
     };
 
+    const getProfileIdAttribute = (memberId) => {
+        const id = Number(memberId);
+        return Number.isInteger(id) && id > 0 ? ` data-profile-id="${id}"` : "";
+    };
+
     const renderCard = (post) => `
-        <article class="postCard" data-post-id="${post.id}">
+        <article class="postCard" data-post-id="${post.id}"${getProfileIdAttribute(post.memberId)}>
             <div class="postBody">
                 <header class="postHeader">
                     <div class="postIdentity">
