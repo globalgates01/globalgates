@@ -29,6 +29,54 @@ create table tbl_oauth(
 );
 
 
+insert into tbl_member (
+    member_name,
+    member_email,
+    member_password,
+    member_nickname,
+    member_handle,
+    member_phone,
+    member_region,
+    member_status,
+    member_role,
+    push_enabled,
+    birth_date,
+    created_datetime,
+    updated_datetime
+)
+values
+    (
+        '전문가테스트1',
+        'expert_test1@test.com',
+        '$2a$10$KI9JBq.OC7NimQ9mN8aXEuJQnjr9pjWqLQ5rQt0rF82z.3fCyGKhS',
+        '전문가테스트1',
+        '@expert_test1',
+        '01090000001',
+        'Seoul',
+        'active',
+        'expert',
+        true,
+        '',
+        now(),
+        now()
+    ),
+    (
+        '전문가테스트2',
+        'expert_test2@test.com',
+        '$2a$10$KI9JBq.OC7NimQ9mN8aXEuJQnjr9pjWqLQ5rQt0rF82z.3fCyGKhS',
+        '전문가테스트2',
+        '@expert_test2',
+        '01090000002',
+        'Seoul',
+        'active',
+        'expert',
+        true,
+        '',
+        now(),
+        now()
+    );
+
+
 
 
 
