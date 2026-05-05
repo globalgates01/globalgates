@@ -87,6 +87,5 @@ update tbl_subscription set expires_at = '2026-03-30' where member_id = 41;
 
 -- update tbl_subscription set tier = 'free' where member_id = 41;
 delete from tbl_badge where member_id = 41;
-update tbl_member set member_role = 'business' where id = 41;
 delete from tbl_payment_subscribe where member_id = 41;
 delete from tbl_subscription where member_id = 41;
