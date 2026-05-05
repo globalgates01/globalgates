@@ -60,6 +60,7 @@ public class CommunityController {
             if ("inactive".equals(community.getCommunityStatus())) {
                 return "redirect:/community";
             }
+            model.addAttribute("communityName", community.getCommunityName());
         } catch (Exception e) {
             return "redirect:/community";
         }

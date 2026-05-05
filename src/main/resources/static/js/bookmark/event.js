@@ -6,7 +6,7 @@
         services: service,
         layout: layout,
         getMemberId: () => memberId,
-        // 답글 게시 후 카드의 답글 카운트 +1 + aria-label 갱신 + 토스트.
+        // 답글 게시 후 카드의 답글 카운트 +1 + aria-label 갱신. 토스트는 공용 모달이 처리.
         onReplySubmitSuccess: ({ button }) => {
             const countSpan = button?.querySelector(".tweet-action-count");
             if (countSpan) {
@@ -15,7 +15,6 @@
                 const ariaLabel = button.getAttribute("aria-label") || "";
                 button.setAttribute("aria-label", ariaLabel.replace(/^\d+/, String(count)));
             }
-            showToast("답글이 게시되었습니다");
         },
     });
 

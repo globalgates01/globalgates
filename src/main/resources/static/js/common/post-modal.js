@@ -176,42 +176,68 @@ const postModalApi = (() => {
             composeView.classList.remove("off");
         }
 
-        // 게시판 선택
+        // 대상 선택 (일반 / 가입 커뮤니티) — boardMenu 토글 + lazy fetch + 이벤트 위임
         const audienceBtn = overlay.querySelector(".audienceButton");
         const boardMenu = document.getElementById("boardMenu");
-        const boardOptions = document.querySelectorAll(".boardMenuOption");
-        const communityItems = document.querySelectorAll(".communityMenuItem");
+        const communityMenuList = document.getElementById("communityMenuList");
+        let communitiesLoaded = false;
+
+        async function loadMyCommunities() {
+            if (communitiesLoaded || !communityMenuList) return;
+            try {
+                const data = await postModalService.getMyCommunities(1);
+                const communities = data.communities || [];
+                if (communities.length > 0) {
+                    communityMenuList.innerHTML = "";
+                    communities.forEach(c => {
+                        const item = document.createElement("div");
+                        item.className = "communityMenuItem";
+                        item.dataset.communityId = c.id;
+                        const name = document.createElement("span");
+                        name.className = "communityMenuName";
+                        name.textContent = c.communityName;
+                        item.appendChild(name);
+                        communityMenuList.appendChild(item);
+                    });
+                }
+                communitiesLoaded = true;
+            } catch (err) {
+                console.error("가입 커뮤니티 로딩 실패:", err);
+            }
+        }
 
         if (audienceBtn && boardMenu) {
-            audienceBtn.addEventListener("click", (e) => {
+            audienceBtn.addEventListener("click", async (e) => {
                 e.stopPropagation();
-                let isOpen = !boardMenu.classList.contains("off");
+                const isOpen = !boardMenu.classList.contains("off");
                 if (isOpen) {
                     boardMenu.classList.add("off");
-                } else {
-                    const rect = audienceBtn.getBoundingClientRect();
-                    boardMenu.style.left = rect.left + "px";
-                    boardMenu.style.top = (rect.bottom + 8) + "px";
-                    boardMenu.classList.remove("off");
+                    return;
                 }
+                await loadMyCommunities();
+                const rect = audienceBtn.getBoundingClientRect();
+                boardMenu.style.left = rect.left + "px";
+                boardMenu.style.top = (rect.bottom + 8) + "px";
+                boardMenu.classList.remove("off");
             });
-            boardOptions.forEach((option) => {
-                option.addEventListener("click", (e) => {
-                    boardOptions.forEach((opt) => { opt.classList.remove("isSelected"); });
-                    communityItems.forEach((ci) => { ci.classList.remove("isSelected"); });
-                    option.classList.add("isSelected");
-                    audienceBtn.textContent = option.querySelector(".boardMenuOptionLabel").textContent;
-                    boardMenu.classList.add("off");
-                });
-            });
-            communityItems.forEach((item) => {
-                item.addEventListener("click", (e) => {
-                    boardOptions.forEach((opt) => { opt.classList.remove("isSelected"); });
-                    communityItems.forEach((ci) => { ci.classList.remove("isSelected"); });
-                    item.classList.add("isSelected");
-                    audienceBtn.textContent = item.querySelector(".communityMenuName").textContent;
-                    boardMenu.classList.add("off");
-                });
+
+            // 이벤트 위임: 일반 옵션 + 동적 커뮤니티 항목 모두 처리
+            boardMenu.addEventListener("click", (e) => {
+                const generalOpt = e.target.closest('[data-target="general"]');
+                const communityOpt = e.target.closest(".communityMenuItem");
+                const target = generalOpt || communityOpt;
+                if (!target) return;
+                boardMenu.querySelectorAll(".boardMenuOption, .communityMenuItem")
+                    .forEach(el => el.classList.remove("isSelected"));
+                target.classList.add("isSelected");
+                if (generalOpt) {
+                    audienceBtn.textContent = "일반";
+                    delete audienceBtn.dataset.communityId;
+                } else {
+                    audienceBtn.textContent = communityOpt.querySelector(".communityMenuName").textContent;
+                    audienceBtn.dataset.communityId = communityOpt.dataset.communityId;
+                }
+                boardMenu.classList.add("off");
             });
         }
 
@@ -816,7 +842,18 @@ const postModalApi = (() => {
             if (tagField) { tagField.value = ""; }
             if (boldBtn) { boldBtn.classList.remove("active"); }
             if (italicBtn) { italicBtn.classList.remove("active"); }
-            if (boardMenu) { boardMenu.classList.add("off"); }
+            if (boardMenu) {
+                boardMenu.classList.add("off");
+                boardMenu.querySelectorAll(".boardMenuOption, .communityMenuItem")
+                    .forEach(el => el.classList.remove("isSelected"));
+                const generalOption = boardMenu.querySelector('[data-target="general"]');
+                if (generalOption) generalOption.classList.add("isSelected");
+            }
+            if (audienceBtn) {
+                audienceBtn.textContent = "일반";
+                delete audienceBtn.dataset.communityId;
+                audienceBtn.disabled = false;
+            }
             if (catScroll && originalChipsHTML) { catScroll.innerHTML = originalChipsHTML; }
             selectedLocation = null;
             if (locationDisplay && locationDisplayText) { locationDisplayText.value = ""; locationDisplay.setAttribute("hidden", ""); }
@@ -911,6 +948,13 @@ const postModalApi = (() => {
                 editor.focus();
                 const cs = overlay.querySelector(".category-scroll");
                 if (cs) { requestAnimationFrame(() => { cs.dispatchEvent(new Event("scroll")); }); }
+                // community-detailed 페이지면 audienceBtn 자동 선택 (현재 커뮤니티)
+                const ctxEl = document.querySelector(".communityDetailPage[data-community-id]");
+                const audienceBtn = overlay.querySelector(".audienceButton");
+                if (ctxEl && audienceBtn) {
+                    audienceBtn.dataset.communityId = ctxEl.dataset.communityId;
+                    audienceBtn.textContent = ctxEl.dataset.communityName || "현재 커뮤니티";
+                }
             });
         }
 
@@ -930,6 +974,19 @@ const postModalApi = (() => {
             }
             if (post.postFiles && post.postFiles.length > 0) {
                 ctx.setExistingFiles(post.postFiles);
+            }
+
+            // 편집 모드 — 기존 게시글의 커뮤니티 컨텍스트 표시 + audienceButton 비활성화
+            const audienceBtn = overlay.querySelector(".audienceButton");
+            if (audienceBtn) {
+                if (post.communityId) {
+                    audienceBtn.dataset.communityId = post.communityId;
+                    audienceBtn.textContent = post.communityName || "현재 커뮤니티";
+                } else {
+                    delete audienceBtn.dataset.communityId;
+                    audienceBtn.textContent = "일반";
+                }
+                audienceBtn.disabled = true;
             }
 
             editor.focus();
@@ -1001,14 +1058,29 @@ const postModalApi = (() => {
                 formData.append(`mentionedHandles[${i}]`, h);
             });
 
+            const audienceBtn = overlay.querySelector(".audienceButton");
+            const communityId = audienceBtn?.dataset.communityId || null;
+            const communityName = communityId ? audienceBtn.textContent.trim() : null;
+
             if (editPostId) {
                 await _services.updatePost(editPostId, formData);
+            } else if (communityId) {
+                await postModalService.writeCommunityPost(communityId, formData);
             } else {
                 await _services.writePost(formData);
             }
 
+            const wasEditing = !!editPostId;
+
             close();
-            if (onSubmitSuccess) { onSubmitSuccess(); }
+            if (wasEditing) {
+                postModalService.showToast("수정되었습니다");
+            } else if (communityName) {
+                postModalService.showToast(`${communityName}에 게시되었습니다`);
+            } else {
+                postModalService.showToast("게시되었습니다");
+            }
+            if (onSubmitSuccess) { onSubmitSuccess({ communityId, communityName }); }
         });
 
         _composeHandle = { close: close, openEdit: openEdit };
@@ -1149,6 +1221,7 @@ const postModalApi = (() => {
             const submittedPostId = targetPostId;
             const submittedButton = activeReplyBtn;
             close();
+            postModalService.showToast("답글이 게시되었습니다");
             if (onSubmitSuccess && submittedPostId) {
                 onSubmitSuccess({ postId: submittedPostId, button: submittedButton });
             }
