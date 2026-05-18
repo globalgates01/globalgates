@@ -53,7 +53,7 @@ WORKDIR /app
 COPY . .
 
 # 빌드
-RUN chmod +x ./gradlew && ./gradlew build
+RUN chmod +x ./gradlew && ./gradlew clean bootJar -x test
 
 # 실행만 담당하는 jre 환경으로 설정한다.
 FROM eclipse-temurin:17-jre
@@ -61,7 +61,7 @@ FROM eclipse-temurin:17-jre
 ENV TZ=Asia/Seoul
 
 # JAR 파일 복사
-COPY --from=build /app/build/libs/app-0.0.1-SNAPSHOT.jar app.jar
+COPY --from=build /app/build/libs/back-0.0.1-SNAPSHOT.jar back.jar
 
 # 포트 오픈
 EXPOSE 10000
