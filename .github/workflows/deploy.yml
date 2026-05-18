@@ -61,12 +61,14 @@ jobs:
             --build-arg NAVER_CLIENT_SECRET=${{ secrets.NAVER_CLIENT_SECRET }} \
           -t app .
           docker run -d -p 80:10000 --name app \
+            --add-host=host.docker.internal:host-gateway \
             -e JWT_SECRET=${{ secrets.JWT_SECRET }} \
             -e PSQL_PORT=${{ secrets.PSQL_PORT }} \
             -e PSQL_DATABASE=${{ secrets.PSQL_DATABASE }} \
             -e PSQL_USERNAME=${{ secrets.PSQL_USERNAME }} \
             -e PSQL_PASSWORD=${{ secrets.PSQL_PASSWORD }} \
             -e REDIS_PORT=${{ secrets.REDIS_PORT }} \
+            -e RABBITMQ_HOST=host.docker.internal \
             -e EC2_HOST=${{ secrets.EC2_HOST }} \
             -e AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY }} \
             -e AWS_SECRET_KEY=${{ secrets.AWS_SECRET_KEY }} \
