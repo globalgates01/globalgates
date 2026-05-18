@@ -1,0 +1,87 @@
+server:
+  port: 10000
+  servlet:
+    session:
+      tracking-modes: cookie
+  ssl:
+    enabled: true
+    certificate: classpath:key/globalgates+3.pem
+    certificate-private-key: classpath:key/globalgates+3-key.pem
+
+spring:
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: dhkdch6356@gmail.com
+    password: pvrm smvc eool uwpe
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+  #            auth, 사용자 인증(username, password 확인)
+  #            start tls(Transport Layer Security), 메일 내용이 네트워크상에서 암호화되어 전송
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://${EC2_HOST}:${PSQL_PORT}/${PSQL_DATABASE}?serverTimezone=Asia/Seoul
+    username: ${PSQL_USERNAME}
+    password: ${PSQL_PASSWORD}
+  session:
+    redis:
+      repository-type: indexed
+      flush-mode: immediate
+  data:
+    redis:
+      host: ${EC2_HOST}
+      port: ${REDIS_PORT}
+
+  cache:
+    type: redis
+
+  profiles:
+    active: local
+    include: oauth
+
+  servlet:
+    multipart:
+      enabled: true
+      file-size-threshold: 10MB
+      max-file-size: 5MB
+      max-request-size: 15MB
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+
+mybatis:
+  mapper-locations: classpath*:mapper/**/*.xml
+  type-aliases-package: com.app.globalgates.domain; com.app.globalgates.dto;
+  type-handlers-package: com.app.globalgates.mybatis.handler
+  configuration:
+    map-underscore-to-camel-case: true
+
+# openssl rand -base64 32
+jwt:
+  secret: ${JWT_SECRET}
+
+aws:
+  access-key: ${AWS_ACCESS_KEY}
+  secret-key: ${AWS_SECRET_KEY}
+  s3:
+    bucket-name: ${AWS_BUCKET_NAME}
+  region: ${AWS_REGION}
+
+message:
+  api-key: NCSMRBZVSYZFZ5LU
+  api-secret-key: N0UN17FZBRTSZ4SOEYAH2RPTHV98TKWW
+
+google:
+  maps:
+    api-key: AIzaSyCkisyW-Pu6pWUf254c_QQIxCywr0GkES4
+
+bootpay:
+  application-id: 69604bf2b6279cebf60ad118
+  private-key: pDQsY5xp8hFs7NTMZSIGZ2PO9l5T9BqBdCkzZ0cR41w=
+  api-base-url: https://api.bootpay.co.kr
