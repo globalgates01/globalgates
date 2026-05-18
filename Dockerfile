@@ -67,7 +67,7 @@ COPY --from=build /app/build/libs/back-0.0.1-SNAPSHOT.jar back.jar
 EXPOSE 10000
 
 # 실행 명령어
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-jar", "back.jar"]
 
 # push
 
