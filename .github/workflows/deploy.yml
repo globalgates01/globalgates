@@ -70,6 +70,7 @@ jobs:
             -e REDIS_PORT=${{ secrets.REDIS_PORT }} \
             -e RABBITMQ_HOST=${{ secrets.EC2_HOST1 }} \
             -e OAUTH_BASE_URL=https://globalgates.store \
+            -e AI_FASTAPI_BASE_URL=${{ secrets.AI_FASTAPI_BASE_URL || 'http://host.docker.internal:8000' }} \
             -e EC2_HOST=${{ secrets.EC2_HOST }} \
             -e AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY }} \
             -e AWS_SECRET_KEY=${{ secrets.AWS_SECRET_KEY }} \

@@ -85,3 +85,7 @@ bootpay:
   application-id: 69604bf2b6279cebf60ad118
   private-key: pDQsY5xp8hFs7NTMZSIGZ2PO9l5T9BqBdCkzZ0cR41w=
   api-base-url: https://api.bootpay.co.kr
+
+ai:
+  fastapi:
+    base-url: ${AI_FASTAPI_BASE_URL:http://127.0.0.1:8000}
