@@ -34,7 +34,9 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                         "https://127.0.0.1:*",
                         "http://127.0.0.1:*",
                         "https://*.globalgates.com",
-                        "https://globalgates.com"
+                        "https://globalgates.com",
+                        "https://globalgates.store",
+                        "https://*.globalgates.store"
                 )
                 .addInterceptors(handshakeInterceptor)
                 .withSockJS();
