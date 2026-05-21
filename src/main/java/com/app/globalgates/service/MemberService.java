@@ -152,8 +152,9 @@ public class MemberService {
 
     //  프로필 수정 텍스트 저장
     @Transactional
+    @CacheEvict(value="member", key="#loginId")
     @LogStatus
-    public void update(MemberDTO memberDTO) {
+    public void update(String loginId, MemberDTO memberDTO) {
         // 이름(닉네임), 자기소개, 생년월일만 갱신한다.
         // 이미지 교체 흐름은 컨트롤러에서 upload/save/delete 순서로 직접 조합한다.
         memberDAO.update(memberDTO);
@@ -251,7 +252,7 @@ public class MemberService {
     }
 
     @Transactional
-    @CachePut(value="member", key="#loginId")
+    @CacheEvict(value="member", key="#loginId")
     @LogStatus
     public void updateHandle(String loginId, String memberHandle) {
         MemberDTO member = memberDAO.findMemberByLoginId(loginId)
@@ -283,7 +284,7 @@ public class MemberService {
     }
 
     @Transactional
-    @CachePut(value="member", key="#loginId")
+    @CacheEvict(value="member", key="#loginId")
     @LogStatus
     public void updatePhone(String loginId, String memberPhone) {
         MemberDTO member = memberDAO.findMemberByLoginId(loginId)
@@ -312,7 +313,7 @@ public class MemberService {
     }
 
     @Transactional
-    @CachePut(value="member", key="#loginId")
+    @CacheEvict(value="member", key="#loginId")
     @LogStatus
     public void updateEmail(String loginId, String memberEmail) {
         MemberDTO member = memberDAO.findMemberByLoginId(loginId)
@@ -344,7 +345,7 @@ public class MemberService {
     // getMember(loginId)는 캐시를 사용하므로 저장 후에는 현재 사용자의 member 캐시를 비워
     // 다음 setting 진입이나 새로고침 시 최신 언어가 다시 내려오게 만든다.
     @Transactional
-    @CachePut(value="member", key="#loginId")
+    @CacheEvict(value="member", key="#loginId")
     @LogStatus
     public void updateLanguage(String loginId, String memberLanguage) {
         MemberDTO member = memberDAO.findMemberByLoginId(loginId)
@@ -366,7 +367,7 @@ public class MemberService {
     // setting의 국가 선택은 단일 라벨 문자열만 넘어오는 구조다.
     // memberRegion은 주소용으로 이미 쓰고 있으므로 국가 저장은 member_country만 별도로 갱신한다.
     @Transactional
-    @CachePut(value = "member", key = "#loginId")
+    @CacheEvict(value = "member", key = "#loginId")
     @LogStatus
     public void updateCountry(String loginId, String memberCountry) {
         MemberDTO member = memberDAO.findMemberByLoginId(loginId)
