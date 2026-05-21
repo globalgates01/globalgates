@@ -239,7 +239,7 @@ public class MemberAPIController implements MemberAPIControllerDocs {
 
         try {
             // 1. 텍스트 정보는 이미지와 별개로 먼저 저장한다.
-            memberService.update(memberDTO);
+            memberService.update(userDetails.getLoginId(), memberDTO);
 
             // 2. 프로필 이미지를 새로 선택한 경우에만 업로드/저장을 진행한다.
             if (profileImage != null && !profileImage.isEmpty()) {
